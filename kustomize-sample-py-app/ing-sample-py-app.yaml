@@ -15,7 +15,7 @@ spec:
               service:
                 name: sample-py-app
                 port:
-                  number: 5000
+                  number: 8000
           
     - host: "gbt55.example.net"
       http:
@@ -26,5 +26,5 @@ spec:
               service:
                 name: sample-py-app
                 port:
-                  number: 5000
+                  number: 8000
       
