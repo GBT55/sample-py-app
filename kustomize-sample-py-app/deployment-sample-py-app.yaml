@@ -14,10 +14,10 @@ spec:
     spec:
       containers:
       - name: sample-py-app
-        image: gbt55/sample-py-app:v1.0.0
+        image: gbt55/sample-py-app:v2.0.0
         imagePullPolicy: Always
         ports:
-        - containerPort: 5000
+        - containerPort: 8000
         volumeMounts:
         - name: tz-config
           mountPath: /etc/localtime
@@ -32,8 +32,8 @@ metadata:
   name: sample-py-app
 spec:
   ports:
-  - port: 5000
-    targetPort: 5000
+  - port: 8000
+    targetPort: 8000
   selector:
     role: sample-py-app
   type: ClusterIP
