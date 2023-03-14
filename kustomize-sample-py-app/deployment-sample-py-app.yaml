@@ -36,4 +36,4 @@ spec:
     targetPort: 5000
   selector:
     role: sample-py-app
-  type: LoadBalancer
+  type: ClusterIP
