@@ -16,7 +16,7 @@ spec:
                 name: sample-py-app
                 port:
                   number: 8000
-          
+
     - host: "gbt55.example.net"
       http:
         paths:
@@ -27,4 +27,3 @@ spec:
                 name: sample-py-app
                 port:
                   number: 8000
-      
