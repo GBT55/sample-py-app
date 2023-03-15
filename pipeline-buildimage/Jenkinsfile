@@ -6,7 +6,7 @@ node {
     }
 
     stage('Build image') {
-        app = docker.build("GBT55/sample-py-app")
+        app = docker.build("gbt55/sample-py-app")
     }
 
     stage('Test image') {
