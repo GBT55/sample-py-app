@@ -4,6 +4,7 @@ metadata:
   name: sample-py-app
 spec:
   replicas: 3
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       role: sample-py-app
