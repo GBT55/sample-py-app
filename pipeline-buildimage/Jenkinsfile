@@ -9,13 +9,13 @@ node {
         app = docker.build("gbt55/sample-py-app", "./app")
     }
 
-    stage('Test image') {
+    // stage('Test image') {
   
 
-        app.inside {
-            sh 'echo "Tests passed"'
-        }
-    }
+    //     app.inside {
+    //         sh 'echo "Tests passed"'
+    //     }
+    // }
 
     stage('Push image') {
         
