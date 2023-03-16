@@ -20,7 +20,7 @@ node {
     stage('Push image') {
         
         docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-            app.push("v1.0.${env.BUILD_NUMBER}")
+            app.push("v3.0.${env.BUILD_NUMBER}")
         }
     }
     
