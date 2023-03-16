@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: sample-py-app
-        image: gbt55/sample-py-app:v1.0.52
+        image: gbt55/sample-py-app:v1.0.53
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
