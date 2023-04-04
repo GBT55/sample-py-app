@@ -1,31 +1,101 @@
-node {
-    def app
+// node {
+//     def app
 
-    stage('Clone repository') {
-        checkout scm
-    }
+//     stage('Clone repository') {
+//         checkout scm
+//     }
 
-    stage('Build image') {
-        app = docker.build("gbt55/sample-py-app", "./app")
-    }
+//     stage('Build image') {
+//         app = docker.build("gbt55/sample-py-app", "./app")
+//     }
 
-    // stage('Test image') {
+//     // stage('Test image') {
   
 
-    //     app.inside {
-    //         sh 'echo "Tests passed"'
-    //     }
-    // }
+//     //     app.inside {
+//     //         sh 'echo "Tests passed"'
+//     //     }
+//     // }
 
-    stage('Push image') {
+//     stage('Push image') {
         
-        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-            app.push("v3.0.${env.BUILD_NUMBER}")
-        }
-    }
+//         docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+//             app.push("v3.0.${env.BUILD_NUMBER}")
+//         }
+//     }
     
-    stage('Trigger ManifestUpdate') {
-                echo "triggering updatemanifestjob"
-                build job: 'updatemanifest', parameters: [string(name: 'DOCKERTAG', value: env.BUILD_NUMBER)]
+//     stage('Trigger ManifestUpdate') {
+//                 echo "triggering updatemanifestjob"
+//                 build job: 'updatemanifest', parameters: [string(name: 'DOCKERTAG', value: env.BUILD_NUMBER)]
+//         }
+// }
+
+podTemplate (yaml: '''
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                - name: dind
+                  image: docker:dind
+                  readinessProbe:
+                    exec:
+                      command: [sh, -c, "docker ps"]
+                  securityContext:
+                    privileged: true
+''') {
+    node(POD_LABEL) {
+        // def app
+
+        stage('Clone repository') {
+            container('dind')
+            {
+                checkout scm
+            }
+            
         }
+
+        stage('Login to dockerhub'){
+            container('dind'){
+                script{
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'HUB_PASSWD', usernameVariable: 'HUB_USER')]) {
+                        sh "docker login -u ${HUB_USER} -p ${HUB_PASSWD}"
+                    }
+                    
+                }
+            }
+        }
+
+        stage('Build & push image') {
+            container('dind'){
+                script{
+                    sh "docker buildx create --name builder"
+                    sh "docker buildx use builder"
+                    sh "docker buildx build -t gbt55/sample-py-app:v3.0.${env.BUILD_NUMBER} --push --platform linux/amd64,linux/arm64,linux/arm/v7"
+                }
+            }
+            
+        }
+
+        // stage('Test image') {
+    
+
+        //     app.inside {
+        //         sh 'echo "Tests passed"'
+        //     }
+        // }
+
+        // stage('Push image') {
+        //     container('dind'){
+        //         docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+        //         app.push("v3.0.${env.BUILD_NUMBER}")
+        //         }
+        //     }
+            
+        // }
+        
+        stage('Trigger ManifestUpdate') {
+                    echo "triggering updatemanifestjob"
+                    build job: 'UM-sample-py-app', parameters: [string(name: 'DOCKERTAG', value: env.BUILD_NUMBER)]
+            }
+    }
 }
